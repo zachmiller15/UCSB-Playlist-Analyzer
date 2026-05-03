@@ -12,8 +12,8 @@ QUERIES = [
 ]
 
 auth_manager = SpotifyClientCredentials(
-    client_id="068d3dfa31d0431391104cddbc252aed",
-    client_secret="10a2355c48f34fc2934d17e45aa5a20b"
+    client_id="your-client-id-here",
+    client_secret="your-client-secret-here"
 )
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
