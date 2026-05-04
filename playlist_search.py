@@ -1,6 +1,5 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-from typing import Any
 
 QUERIES = [
     "UCSB",
@@ -12,8 +11,8 @@ QUERIES = [
 ]
 
 auth_manager = SpotifyClientCredentials(
-    client_id="your-client-id-here",
-    client_secret="your-client-secret-here"
+    client_id="068d3dfa31d0431391104cddbc252aed",
+    client_secret="10a2355c48f34fc2934d17e45aa5a20b"
 )
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
@@ -30,7 +29,6 @@ def get_playlists(query: str) -> list[str]:
 
         if response["playlists"]["next"] is None:
             break
-        
 
         for item in response["playlists"]["items"]:
             if item is None:
