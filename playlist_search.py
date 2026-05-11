@@ -1,5 +1,7 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+import os
+from dotenv import load_dotenv
 
 QUERIES = [
     "UCSB",
@@ -10,12 +12,15 @@ QUERIES = [
     "Deltopia"
 ]
 
+load_dotenv()
+
 auth_manager = SpotifyClientCredentials(
-    client_id="068d3dfa31d0431391104cddbc252aed",
-    client_secret="10a2355c48f34fc2934d17e45aa5a20b"
+    client_id=os.getenv("SPOTIFY_CLIENT_ID"),
+    client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")
 )
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
+#Returns a list of all playlist IDs that match a search query
 def get_playlists(query: str) -> list[str]:
     playlists = set()
 
