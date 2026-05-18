@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UCSB Playlist Wrapped</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #121212;
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      color: #FFFFFF;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #0a3d20 0%, #158a3e 40%, #1DB954 75%, #00C9A7 100%);
+      padding: 60px 40px 44px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    }
+    header p {
+      margin-top: 12px;
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      padding: 32px 40px;
+      background: #181818;
+      border-bottom: 1px solid #282828;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1DB954;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: #B3B3B3;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 6px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 700px), 1fr));
+      gap: 24px;
+      padding: 32px 24px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #181818;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #282828;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .card.full-width { grid-column: 1 / -1; }
+    iframe { width: 100%; border: none; display: block; }
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: #B3B3B3;
+      font-size: 0.85rem;
+      border-top: 1px solid #282828;
+    }
+    footer span { color: #1DB954; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>UCSB Playlist Wrapped</h1>
+    <p>Your collective music taste, visualized</p>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num">193</div>
+      <div class="stat-label">Playlists Analyzed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">8,796</div>
+      <div class="stat-label">Unique Songs</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3,325</div>
+      <div class="stat-label">Artists</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">530h</div>
+      <div class="stat-label">Total Music</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">28%</div>
+      <div class="stat-label">Explicit</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="font-size:1.2rem">Doses & Mimosas</div>
+      <div class="stat-label">Most Played</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card full-width">
+      <iframe src="02_top_songs.html" height="920"></iframe>
+    </div>
+    <div class="card full-width">
+      <iframe src="06_artist_treemap.html" height="680"></iframe>
+    </div>
+    <div class="card">
+      <iframe src="03_genre_treemap.html" height="630"></iframe>
+    </div>
+    <div class="card">
+      <iframe src="04_duration_distribution.html" height="530"></iframe>
+    </div>
+    <div class="card">
+      <iframe src="05_explicit_donut.html" height="530"></iframe>
+    </div>
+    <div class="card full-width">
+      <iframe src="07_top_albums.html" height="710"></iframe>
+    </div>
+  </div>
+
+  <footer>Built with Plotly &mdash; <span>UCSB Playlist Analyzer</span></footer>
+</body>
+</html>
