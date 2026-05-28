@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 import pandas as pd
 import plotly.graph_objects as go
 import warnings
@@ -19,21 +20,96 @@ TEAL     = "#00C9A7"
 CYAN     = "#00D2FF"
 
 COLORSCALE = [[0, GREEN_D], [0.5, GREEN], [1, GREEN_L]]
+BW_BG = "#FFFFFF"
+BW_SURFACE = "#E5E5E5"
+BW_TEXT = "#111111"
+BW_MUTED = "#555555"
+BW_TILE = "#F2F2F2"
+FONT_FAMILY = "'Nunito Sans', 'Circular Std', Avenir, 'Helvetica Neue', Arial, sans-serif"
+FONT_IMPORT = "@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;800;900&display=swap');"
 
 LAYOUT_BASE = dict(
     paper_bgcolor=BG,
     plot_bgcolor=CARD_BG,
-    font=dict(family="'Helvetica Neue', Arial, sans-serif", color=TEXT, size=13),
+    font=dict(family=FONT_FAMILY, color=TEXT, size=13),
     title_font=dict(size=22, color=TEXT),
     margin=dict(l=60, r=40, t=80, b=60),
     hoverlabel=dict(bgcolor=SURFACE, font_color=TEXT, font_size=13,
                     bordercolor=GREEN),
 )
 
+
+def format_duration(seconds):
+    minutes, secs = divmod(int(round(seconds)), 60)
+    return f"{minutes}:{secs:02d}"
+
+
+def write_graph(fig, path):
+    html = fig.to_html(full_html=True, include_plotlyjs=True)
+    html = html.replace("<head>", f"<head><style>{FONT_IMPORT}</style>", 1)
+    with open(path, "w") as f:
+        f.write(html)
+
+
+def apply_bw_theme(fig):
+    bw_fig = deepcopy(fig)
+    bw_fig.update_layout(
+        paper_bgcolor=BW_BG,
+        plot_bgcolor=BW_BG,
+        template="none",
+        font=dict(family=FONT_FAMILY, color=BW_TEXT, size=13),
+        title_font=dict(size=22, color=BW_TEXT),
+        hoverlabel=dict(bgcolor=BW_BG, font_color=BW_TEXT, font_size=13,
+                        bordercolor=BW_TEXT),
+    )
+    bw_fig.update_xaxes(color=BW_MUTED, gridcolor=BW_SURFACE, zerolinecolor=BW_SURFACE)
+    bw_fig.update_yaxes(color=BW_TEXT, gridcolor=BW_SURFACE, zerolinecolor=BW_SURFACE)
+
+    for trace in bw_fig.data:
+        if hasattr(trace, "marker") and trace.marker is not None:
+            if trace.type == "pie":
+                trace.marker.colors = [BW_BG, "#D9D9D9"]
+                trace.marker.line.color = BW_TEXT
+            else:
+                if trace.type == "treemap":
+                    trace.marker.colors = [BW_TILE] * len(trace.labels)
+                    trace.marker.colorscale = None
+                    trace.marker.line.color = BW_TEXT
+                elif getattr(trace.marker, "colorscale", None):
+                    trace.marker.color = "#111111"
+                    trace.marker.colorscale = None
+                else:
+                    trace.marker.color = "#111111"
+                if getattr(trace.marker, "line", None) and trace.type != "treemap":
+                    trace.marker.line.color = BW_BG if trace.type == "bar" else BW_TEXT
+
+        if hasattr(trace, "textfont") and trace.textfont is not None:
+            trace.textfont.color = BW_TEXT
+
+    for shape in bw_fig.layout.shapes or []:
+        if getattr(shape, "line", None):
+            shape.line.color = BW_TEXT
+
+    for annotation in bw_fig.layout.annotations or []:
+        annotation.font.color = BW_TEXT
+
+    if bw_fig.layout.legend:
+        bw_fig.layout.legend.font = dict(color=BW_TEXT)
+        bw_fig.layout.legend.bgcolor = BW_BG
+
+    return bw_fig
+
+
+def write_bw_graph(fig, filename):
+    write_graph(apply_bw_theme(fig), os.path.join("BW_graphs", filename))
+
+
 os.makedirs("graphs", exist_ok=True)
+os.makedirs("BW_graphs", exist_ok=True)
 
 df = pd.read_csv("song_info.csv")
 df["duration_min"] = df["duration_ms"] / 60_000
+df["duration_sec"] = df["duration_ms"] / 1_000
 
 num_playlists = sum(1 for line in open("playlist_ids.txt") if line.strip())
 
@@ -66,16 +142,17 @@ fig1 = go.Figure(go.Bar(
 ))
 fig1.update_layout(
     **LAYOUT_BASE,
-    title="Top Artists",
+    title="Top artists",
     xaxis=dict(showgrid=True, gridcolor=SURFACE,
-               title="Total Playlist Appearances", color=MUTED,
+               title="Total playlist appearances", color=MUTED,
                range=[0, artist_counts["Total Appearances"].max() * 1.18]),
     yaxis=dict(showgrid=False, color=TEXT, tickfont=dict(size=12),
                ticksuffix="  "),
     height=700,
     bargap=0.25,
 )
-fig1.write_html("graphs/01_top_artists.html")
+write_graph(fig1, "graphs/01_top_artists.html")
+write_bw_graph(fig1, "01_top_artists.html")
 print("✓ 01_top_artists.html")
 
 
@@ -83,7 +160,7 @@ print("✓ 01_top_artists.html")
 top_songs = (
     df[["name", "artist_1", "count"]]
     .sort_values("count", ascending=False)
-    .head(30)
+    .head(20)
     .reset_index(drop=True)
 )
 top_songs["Label"] = top_songs["name"] + "  —  " + top_songs["artist_1"]
@@ -96,11 +173,7 @@ fig2 = go.Figure(go.Bar(
     marker=dict(
         color=top_songs["count"],
         colorscale=COLORSCALE,
-        showscale=True,
-        colorbar=dict(
-            title=dict(text="Playlists", font=dict(color=MUTED)),
-            tickfont=dict(color=MUTED),
-        ),
+        showscale=False,
         line=dict(width=0),
     ),
     text=top_songs["count"],
@@ -110,16 +183,18 @@ fig2 = go.Figure(go.Bar(
 ))
 fig2.update_layout(
     **LAYOUT_BASE,
-    title="Top 30 Most Recurring Songs",
+    title="Top 20 most recurring songs (excluding features)",
     xaxis=dict(showgrid=True, gridcolor=SURFACE,
-               title="Playlist Appearances", color=MUTED,
+               title="Playlist appearances", color=MUTED,
                range=[0, top_songs["count"].max() * 1.18]),
     yaxis=dict(showgrid=False, color=TEXT, tickfont=dict(size=10),
-               ticksuffix="  "),
+               ticksuffix="  ", automargin=True),
     height=900,
     bargap=0.2,
 )
-fig2.write_html("graphs/02_top_songs.html")
+fig2.update_layout(margin=dict(l=300, r=40, t=80, b=60))
+write_graph(fig2, "graphs/02_top_songs.html")
+write_bw_graph(fig2, "02_top_songs.html")
 print("✓ 02_top_songs.html")
 
 
@@ -127,11 +202,15 @@ print("✓ 02_top_songs.html")
 all_genres = pd.concat(
     [df[c] for c in ["genre_1", "genre_2", "genre_3", "genre_4", "genre_5"]]
 ).dropna()
+all_genres = all_genres.str.strip().str.lower().str.title().str.replace(r'(\d)S\b', r'\1s', regex=True)
+all_genres = all_genres.str.replace(r"\bHip\s+Hop\b", "Hip-Hop", regex=True)
+all_genres = all_genres.str.replace("Rnb", "R&B", case=False, regex=False)
+all_genres = all_genres[all_genres != ""]
 
 genre_counts = all_genres.value_counts().head(40).reset_index()
 genre_counts.columns = ["Genre", "Count"]
 
-top_genres = genre_counts.head(30).copy()
+top_genres = genre_counts.head(25).copy()
 
 fig4 = go.Figure(go.Treemap(
     labels=top_genres["Genre"],
@@ -149,46 +228,60 @@ fig4 = go.Figure(go.Treemap(
 ))
 fig4.update_layout(
     **LAYOUT_BASE,
-    title="Top 30 Genres",
+    title="Top 25 genres",
     height=600,
 )
-fig4.write_html("graphs/03_genre_treemap.html")
+write_graph(fig4, "graphs/03_genre_treemap.html")
+write_bw_graph(fig4, "03_genre_treemap.html")
 print("✓ 03_genre_treemap.html")
 
 
 # ── 5. SONG DURATION DISTRIBUTION ────────────────────────────────────────────
 fig5 = go.Figure()
 
-fig5.add_trace(go.Histogram(
-    x=df["duration_min"],
-    nbinsx=60,
+duration_bins = pd.interval_range(start=0, end=600, freq=10, closed="left")
+duration_counts = pd.cut(df["duration_sec"], bins=duration_bins).value_counts().sort_index()
+duration_centers = [interval.left + 5 for interval in duration_counts.index]
+duration_labels = [
+    f"{format_duration(interval.left)}-{format_duration(interval.right)}"
+    for interval in duration_counts.index
+]
+
+fig5.add_trace(go.Bar(
+    x=duration_centers,
+    y=duration_counts.values,
+    customdata=duration_labels,
     marker=dict(
         color=GREEN,
         opacity=0.85,
         line=dict(width=0.5, color=BG),
     ),
-    hovertemplate="Duration: %{x:.2f} min<br>Songs: %{y}<extra></extra>",
+    hovertemplate="Duration: %{customdata}<br>Songs: %{y}<extra></extra>",
     name="Songs",
 ))
 
-mean_dur = df["duration_min"].mean()
+mean_dur = df["duration_sec"].mean()
 fig5.add_vline(
     x=mean_dur, line_dash="dash", line_color=TEXT, line_width=2,
-    annotation_text=f"  avg {mean_dur:.2f} min",
+    annotation_text=f"  avg {format_duration(mean_dur)}",
     annotation_font_color=TEXT,
 )
 
 fig5.update_layout(
     **LAYOUT_BASE,
-    title="Song Duration Distribution",
-    xaxis=dict(title="Duration (minutes)", color=MUTED, showgrid=True,
-               gridcolor=SURFACE, range=[0, 10]),
-    yaxis=dict(title="Number of Songs", color=MUTED, showgrid=True,
+    title="Song duration distribution",
+    xaxis=dict(title="Duration", color=MUTED, showgrid=True,
+               gridcolor=SURFACE, range=[0, 600],
+               tickvals=list(range(0, 601, 60)),
+               ticktext=[format_duration(x) for x in range(0, 601, 60)]),
+    yaxis=dict(title="Number of songs", color=MUTED, showgrid=True,
                gridcolor=SURFACE),
     height=500,
     showlegend=False,
+    bargap=0.03,
 )
-fig5.write_html("graphs/04_duration_distribution.html")
+write_graph(fig5, "graphs/04_duration_distribution.html")
+write_bw_graph(fig5, "04_duration_distribution.html")
 print("✓ 04_duration_distribution.html")
 
 
@@ -202,9 +295,10 @@ fig6 = go.Figure(go.Pie(
     values=values,
     hole=0.6,
     marker=dict(colors=[GREEN, PURPLE], line=dict(color=BG, width=3)),
-    textinfo="label+percent",
+    textinfo="none",
+    texttemplate="%{label}<br>%{percent:.0%}",
     textfont=dict(size=14, color=TEXT),
-    hovertemplate="<b>%{label}</b><br>Songs: %{value}<br>%{percent}<extra></extra>",
+    hovertemplate="<b>%{label}</b><br>Songs: %{value}<br>%{percent:.0%}<extra></extra>",
     pull=[0, 0.04],
 ))
 fig6.add_annotation(
@@ -214,11 +308,12 @@ fig6.add_annotation(
 )
 fig6.update_layout(
     **LAYOUT_BASE,
-    title="Explicit vs Clean",
+    title="How explicit is the music?",
     height=500,
     legend=dict(font=dict(color=TEXT), bgcolor=CARD_BG),
 )
-fig6.write_html("graphs/05_explicit_donut.html")
+write_graph(fig6, "graphs/05_explicit_donut.html")
+write_bw_graph(fig6, "05_explicit_donut.html")
 print("✓ 05_explicit_donut.html")
 
 
@@ -248,10 +343,11 @@ fig8 = go.Figure(go.Treemap(
 ))
 fig8.update_layout(
     **LAYOUT_BASE,
-    title="Top 40 Artists by Playlist Presence",
+    title="Top 40 artists by playlist presence",
     height=650,
 )
-fig8.write_html("graphs/06_artist_treemap.html")
+write_graph(fig8, "graphs/06_artist_treemap.html")
+write_bw_graph(fig8, "06_artist_treemap.html")
 print("✓ 06_artist_treemap.html")
 
 
@@ -283,16 +379,18 @@ fig9 = go.Figure(go.Bar(
 ))
 fig9.update_layout(
     **LAYOUT_BASE,
-    title="Top 20 Albums by Playlist Presence",
+    title="Top 20 albums by playlist presence",
     xaxis=dict(showgrid=True, gridcolor=SURFACE,
-               title="Total Playlist Appearances", color=MUTED,
+               title="Total playlist appearances", color=MUTED,
                range=[0, top_albums["count"].max() * 1.18]),
     yaxis=dict(showgrid=False, color=TEXT, tickfont=dict(size=10),
-               ticksuffix="  "),
+               ticksuffix="  ", automargin=True),
     height=680,
     bargap=0.25,
 )
-fig9.write_html("graphs/07_top_albums.html")
+fig9.update_layout(margin=dict(l=320, r=40, t=80, b=60))
+write_graph(fig9, "graphs/07_top_albums.html")
+write_bw_graph(fig9, "07_top_albums.html")
 print("✓ 07_top_albums.html")
 
 
@@ -307,11 +405,11 @@ dashboard_html = f"""<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UCSB Playlist Wrapped</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+    {FONT_IMPORT}
     * {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{
       background: {BG};
-      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-family: {FONT_FAMILY};
       color: {TEXT};
       min-height: 100vh;
     }}
@@ -389,19 +487,23 @@ dashboard_html = f"""<!DOCTYPE html>
   <div class="stats-bar">
     <div class="stat">
       <div class="stat-num">{num_playlists}</div>
-      <div class="stat-label">Playlists Analyzed</div>
+      <div class="stat-label">Playlists analyzed</div>
     </div>
     <div class="stat">
       <div class="stat-num">{len(df):,}</div>
-      <div class="stat-label">Unique Songs</div>
+      <div class="stat-label">Unique songs</div>
     </div>
     <div class="stat">
       <div class="stat-num">{df['artist_1'].nunique():,}</div>
       <div class="stat-label">Artists</div>
     </div>
     <div class="stat">
+      <div class="stat-num">{all_genres.nunique():,}</div>
+      <div class="stat-label">Genres</div>
+    </div>
+    <div class="stat">
       <div class="stat-num">{int(df['duration_min'].sum() / 60):,}h</div>
-      <div class="stat-label">Total Music</div>
+      <div class="stat-label">Total music</div>
     </div>
     <div class="stat">
       <div class="stat-num">{int(df['explicit'].mean()*100)}%</div>
@@ -409,7 +511,7 @@ dashboard_html = f"""<!DOCTYPE html>
     </div>
     <div class="stat">
       <div class="stat-num" style="font-size:1.2rem">{most_played_display}</div>
-      <div class="stat-label">Most Played</div>
+      <div class="stat-label">Most played</div>
     </div>
   </div>
 
@@ -440,6 +542,35 @@ dashboard_html = f"""<!DOCTYPE html>
 
 with open("graphs/dashboard.html", "w") as f:
     f.write(dashboard_html)
+
+bw_dashboard_html = dashboard_html.replace(
+    "linear-gradient(135deg, #0a3d20 0%, #158a3e 40%, #1DB954 75%, #00C9A7 100%)",
+    "#FFFFFF",
+)
+for old, new in [
+    (TEXT, BW_TEXT),
+    (BG, BW_BG),
+    (CARD_BG, BW_BG),
+    (SURFACE, BW_SURFACE),
+    (MUTED, BW_MUTED),
+    (GREEN, BW_TEXT),
+    (GREEN_D, BW_MUTED),
+    (TEAL, BW_SURFACE),
+    ("#0a3d20", BW_TEXT),
+]:
+    bw_dashboard_html = bw_dashboard_html.replace(old, new)
+
+bw_dashboard_html = bw_dashboard_html.replace(
+    "header {\n      background: #111111;",
+    "header {\n      background: #FFFFFF;",
+)
+bw_dashboard_html = bw_dashboard_html.replace(
+    "      text-shadow: 0 2px 20px rgba(0,0,0,0.5);\n",
+    "",
+)
+
+with open("BW_graphs/dashboard.html", "w") as f:
+    f.write(bw_dashboard_html)
 
 print("✓ dashboard.html")
 print(f"\nAll done. Open graphs/dashboard.html in your browser.")
