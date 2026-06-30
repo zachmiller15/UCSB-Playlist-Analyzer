@@ -32,8 +32,6 @@
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
   }
-
-  /* ── HERO: centered single column ── */
   .hero {
     display: flex;
     flex-direction: column;
@@ -43,8 +41,6 @@
     position: relative;
     overflow: hidden;
   }
-
-  /* scrolling bg rows */
   .scroll-bg {
     position: absolute;
     inset: 0;
@@ -71,16 +67,15 @@
   }
   .scroll-row span { padding: 0 1.4rem; flex-shrink: 0; }
 
-  .row-1 { animation: scrollLeft  25s linear infinite; opacity: 0.18; }
-  .row-2 { animation: scrollRight 22s linear infinite; opacity: 0.13; }
-  .row-3 { animation: scrollLeft  25s linear infinite; opacity: 0.16; }
-  .row-4 { animation: scrollRight 25s linear infinite; opacity: 0.12; }
-  .row-5 { animation: scrollLeft  30s linear infinite; opacity: 0.15; }
+  .row-1 { animation: scrollLeft  25s linear infinite; opacity: 0.29; }
+  .row-2 { animation: scrollRight 22s linear infinite; opacity: 0.21; }
+  .row-3 { animation: scrollLeft  25s linear infinite; opacity: 0.27; }
+  .row-4 { animation: scrollRight 25s linear infinite; opacity: 0.19; }
+  .row-5 { animation: scrollLeft  30s linear infinite; opacity: 0.23; }
 
   @keyframes scrollLeft  { from { transform: translateX(0);    } to { transform: translateX(-50%); } }
   @keyframes scrollRight { from { transform: translateX(-50%); } to { transform: translateX(0);    } }
 
-  /* edge fades */
   .scroll-fade {
     position: absolute;
     inset: 0;
@@ -91,7 +86,6 @@
     z-index: 1;
   }
 
-  /* hero content sits above scroll bg */
   .hero-content {
     position: relative;
     z-index: 2;
@@ -129,7 +123,6 @@
     text-shadow: 0 0 28px rgba(57,255,133,0.35), 0 0 60px rgba(57,255,133,0.1);
   }
 
-  /* fade-up reveal */
   .title-l1 {
     display: block;
     color: var(--text-bright);
@@ -161,7 +154,6 @@
     text-shadow: 0 0 14px rgba(57,255,133,0.35);
   }
 
-  /* ── BODY ── */
   .body-wrap {
     max-width: 860px;
     margin: 0 auto;
@@ -202,7 +194,6 @@
 
   .prose p:last-child { margin-bottom: 0; }
 
-  /* ── CHART EMBED ── */
   .chart-embed {
     --chart-width: min(calc(100vw - 2.4rem), 1120px);
     width: var(--chart-width);
@@ -232,7 +223,6 @@
     color: var(--text-dim);
   }
 
-  /* ── VINYL OUTRO ── */
   .vinyl-outro {
   display: flex;
   flex-direction: column;
@@ -260,10 +250,11 @@
   }
 
   .author-bios {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 0 clamp(1.2rem, 5vw, 4rem) clamp(4rem, 8vw, 6rem);
-  }
+  max-width: 860px;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1.2rem, 5vw, 4rem) clamp(4rem, 8vw, 6rem);
+  border-top: 1px solid var(--rule);
+}
 
   .author-bios h2 {
     font-family: var(--display);
@@ -290,7 +281,18 @@
     margin-bottom: 0;
   }
 
-  /* record player container — static, holds spinning disc + tonearm */
+  .dev-credit {
+  margin-top: 0.4rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+
+.dev-credit strong {
+  color: var(--text-bright);
+  font-weight: 500;
+  font-style: normal;
+}
+
   .record-player {
     position: relative;
     width: clamp(260px, 72vw, 460px);
@@ -298,7 +300,6 @@
     cursor: pointer;
   }
 
-  /* platter shadow/rim — static */
   .platter {
     position: absolute;
     inset: 0;
@@ -324,7 +325,6 @@
       0 0 80px rgba(57,255,133,0.10);
   }
 
-  /* the spinning vinyl disc — positioned inside platter */
   .vinyl-disc {
     position: absolute;
     inset: 0;
@@ -335,7 +335,6 @@
     border-radius: 50%;
   }
 
-  /* label text SVG — spins with disc */
   #vinyl-label-svg {
     position: absolute;
     inset: 0;
@@ -351,8 +350,6 @@
     to   { transform: rotate(360deg); }
   }
 
-
-  /* ── SCROLL REVEAL ── */
   .reveal {
     opacity: 0;
     transform: translateY(18px);
@@ -360,7 +357,6 @@
   }
   .reveal.visible { opacity: 1; transform: none; }
 
-  /* ── SCAN LINES ── */
   body::after {
     content: '';
     position: fixed;
@@ -373,7 +369,6 @@
     z-index: 9999;
   }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
     .record-player { width: min(88vw, 340px) !important; }
     .chart-embed {
@@ -392,10 +387,8 @@
 </head>
 <body>
 
-<!-- HERO: centered -->
 <section class="hero">
 
-  <!-- scrolling background -->
   <div class="scroll-bg">
     <div class="scroll-row row-1">
       <span>Pop</span><span>Hip-Hop</span><span>House</span><span>Rock</span><span>Dance</span><span>Electronic</span><span>R&amp;B</span><span>Indie</span><span>Trap</span><span>Alternative</span><span>Soul</span><span>Classic Rock</span>
@@ -420,9 +413,7 @@
   </div>
   <div class="scroll-fade"></div>
 
-  <!-- title content -->
   <div class="hero-content">
-    <div class="hero-eyebrow">Daily Nexus</div>
     <h1 class="hero-title" id="hero-title" aria-label="Isla Vista wrapped: What Spotify playlists reveal about I.V.'s music culture"></h1>
     <div class="hero-byline">
       By <span>Lance Sanchez, Zachary Miller &amp; Tatrina Arutyunova</span>
@@ -431,7 +422,6 @@
 
 </section>
 
-<!-- ARTICLE BODY -->
 <div class="body-wrap">
 
   <div class="prose">
@@ -444,7 +434,6 @@
     <p class="reveal">“The ocean definitely ties into a lot of people’s music across different genres,” Waldman said.</p>
   </div>
 
-<!-- CHART: Top Songs -->
 <div class="chart-embed songs reveal">
   <iframe src="graphs/02_top_songs.html" title="Top 20 most recurring songs"></iframe>
 </div>
@@ -524,7 +513,7 @@
 
 </div><!-- /body-wrap -->
 
-<!-- VINYL OUTRO: click to open playlist -->
+<!-- VINYL OUTRO -->
 <div class="vinyl-outro reveal">
 
   <div class="record-player" id="record-player" title="Listen on Spotify">
@@ -532,7 +521,7 @@
     <!-- static platter rim -->
     <div class="platter"></div>
 
-    <!-- spinning groove SVG — this rotates -->
+    <!-- spinning groove SVG -->
     <svg id="vinyl-grooves" style="position:absolute;inset:0;width:100%;height:100%;animation:spin 9s linear infinite;transform-origin:center;border-radius:50%;" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="vBase" cx="50%" cy="50%" r="50%">
@@ -580,18 +569,18 @@
         <circle cx="200" cy="200" r="108" fill="none" stroke="#111" stroke-width="0.7"/>
         <circle cx="200" cy="200" r="104" fill="none" stroke="#222" stroke-width="0.6"/>
         <circle cx="200" cy="200" r="100" fill="none" stroke="#111" stroke-width="0.7"/>
-        <!-- edge vignette -->
+        
         <circle cx="200" cy="200" r="199" fill="url(#vEdge)"/>
-        <!-- dark gap + label -->
+        
         <circle cx="200" cy="200" r="90"  fill="#090909"/>
         <circle cx="200" cy="200" r="86"  fill="url(#vLabel)" stroke="rgba(57,255,133,0.16)" stroke-width="0.7"/>
-        <!-- spindle -->
+        
         <circle cx="200" cy="200" r="4.4" fill="#2a2a2a" stroke="#444" stroke-width="0.6"/>
         <circle cx="200" cy="200" r="2"   fill="#111"/>
       </g>
     </svg>
 
-    <!-- label text SVG overlay — spins with disc -->
+  
     <svg id="vinyl-label-svg" style="position:absolute;inset:0;width:100%;height:100%;animation:spin 9s linear infinite;transform-origin:center;pointer-events:none;" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
       <path id="arc-top" d="M 140,200 A 60,60 0 0,1 260,200" fill="none"/>
       <path id="arc-bot" d="M 140,200 A 60,60 0 0,0 260,200" fill="none"/>
@@ -612,19 +601,20 @@
 </div>
 
 <section class="author-bios reveal" aria-labelledby="author-bios-heading">
-  <h2 id="author-bios-heading">About the Authors</h2>
+  <h2 id="author-bios-heading">About the authors</h2>
   <p><strong>Lance Sanchez</strong> has been a member of the Daily Nexus since 2023, serving as Assistant Data Editor in 2024 before becoming Data Editor in 2025. Under his and the other editors' leadership, the Data Section has earned multiple awards from the California College Media Association and the Associated Collegiate Press (ACP) National College Media Convention. In addition to his editorial work, Lance is an active contributor to the Nexus Photo Team, capturing major campus and community events such as The Warmup, headlined by Big Sean, and the Santa Barbara International Film Festival.</p>
   <p><strong>Tatrina Arutyunova</strong> has been a member of the Daily Nexus since 2025, serving as a Data Reporter in the Data Section. Her reporting combines programming and investigative journalism to analyze public records, APIs and datasets covering issues relevant to the UCSB and Santa Barbara communities. She aims to help readers better understand trends and public policy with the goal of keeping people informed on news around the local community through powerful data-driven storytelling. Outside of journalism, she is the lead singer of a hard rock band, performing at venues like the Santa Barbara International Film Festival, and serves as President and Founder of the Data Intelligence Club at UCSB.</p>
+  <p class="dev-credit">Web design &amp; development by <strong>Krithi Saravanan &amp; Aiden Shi</strong>.</p>
 </section>
 
 <script>
-// ── Title fade up ──────────────────────────────────────────────────────
+// title fade up
 const titleEl = document.getElementById('hero-title');
 titleEl.innerHTML =
   '<span class="title-l1">Isla Vista wrapped:</span>' +
   '<em class="title-l2">What Spotify playlists reveal about I.V.\u2019s music culture</em>';
 
-// ── Scroll reveal ──────────────────────────────────────────────────────
+// scroll
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
@@ -632,7 +622,7 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ── Vinyl: click opens Spotify ─────────────────────────────────────────
+// click opens Spotify
 const spotifyUrl = 'https://open.spotify.com/embed/playlist/1pUV9bBoMeHXcC9Ke96tVP?utm_source=generator';
 document.getElementById('record-player').addEventListener('click', () => {
   window.open(spotifyUrl, '_blank');
