@@ -6,37 +6,55 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # ── Palette ──────────────────────────────────────────────────────────────────
-BG       = "#121212"
-CARD_BG  = "#181818"
-SURFACE  = "#282828"
-TEXT     = "#FFFFFF"
-MUTED    = "#B3B3B3"
-GREEN    = "#1DB954"
-GREEN_D  = "#158a3e"
-GREEN_L  = "#1ed760"
-PINK     = "#FF6B9D"
-PURPLE   = "#A855F7"
-TEAL     = "#00C9A7"
-CYAN     = "#00D2FF"
+BG       = "#080808"
+CARD_BG  = "#0b0b0b"
+SURFACE  = "#202020"
+TEXT     = "#d8d8d8"
+MUTED    = "#8f8f8f"
+GREEN    = "#2fbf6f"
+GREEN_D  = "#153d27"
+GREEN_L  = "#67d696"
+PINK     = "#d7d7d7"
+PURPLE   = "#7f7f7f"
+TEAL     = "#87ffd2"
+CYAN     = "#b8b8b8"
 
-COLORSCALE = [[0, GREEN_D], [0.5, GREEN], [1, GREEN_L]]
+COLORSCALE = [[0, "#173820"], [0.55, "#237a48"], [1, GREEN]]
+TREEMAP_COLORSCALE = [[0, "#0f2418"], [0.55, "#1b5635"], [1, "#268a51"]]
 BW_BG = "#FFFFFF"
 BW_SURFACE = "#E5E5E5"
 BW_TEXT = "#111111"
 BW_MUTED = "#555555"
 BW_TILE = "#F2F2F2"
-FONT_FAMILY = "'Nunito Sans', 'Circular Std', Avenir, 'Helvetica Neue', Arial, sans-serif"
-FONT_IMPORT = "@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;800;900&display=swap');"
+FONT_FAMILY = "'Source Serif 4', Georgia, serif"
+TITLE_FONT_FAMILY = "'Space Grotesk', Avenir, 'Helvetica Neue', Arial, sans-serif"
+FONT_IMPORT = "@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300;1,8..60,400&family=Space+Grotesk:wght@400;500&display=swap');"
 
 LAYOUT_BASE = dict(
     paper_bgcolor=BG,
-    plot_bgcolor=CARD_BG,
-    font=dict(family=FONT_FAMILY, color=TEXT, size=13),
-    title_font=dict(size=22, color=TEXT),
-    margin=dict(l=60, r=40, t=80, b=60),
-    hoverlabel=dict(bgcolor=SURFACE, font_color=TEXT, font_size=13,
+    plot_bgcolor=BG,
+    font=dict(family=FONT_FAMILY, color=TEXT, size=12),
+    title_x=0,
+    title_xanchor="left",
+    title_font=dict(size=21, color=TEXT, family=TITLE_FONT_FAMILY, weight=500),
+    margin=dict(l=60, r=32, t=70, b=48),
+    hoverlabel=dict(bgcolor="#101010", font_color=TEXT, font_size=12,
                     bordercolor=GREEN),
 )
+
+
+def chart_title(text):
+    return dict(
+        text=text,
+        x=0,
+        xanchor="left",
+        font=dict(
+            family=TITLE_FONT_FAMILY,
+            color=TEXT,
+            size=21,
+            weight=500,
+        ),
+    )
 
 
 def format_duration(seconds):
@@ -44,9 +62,52 @@ def format_duration(seconds):
     return f"{minutes}:{secs:02d}"
 
 
-def write_graph(fig, path):
-    html = fig.to_html(full_html=True, include_plotlyjs=True)
-    html = html.replace("<head>", f"<head><style>{FONT_IMPORT}</style>", 1)
+def write_graph(fig, path, page_bg=BG):
+    html = fig.to_html(
+        full_html=True,
+        include_plotlyjs=True,
+        config={"displayModeBar": False, "responsive": True, "staticPlot": True},
+    )
+    html = html.replace(
+        "<head>",
+        f"""<head><style>
+{FONT_IMPORT}
+html, body {{
+  background: {page_bg};
+  margin: 0;
+  overflow: hidden;
+}}
+.plotly-graph-div {{
+  background: {page_bg} !important;
+}}
+.main-svg {{
+  shape-rendering: geometricPrecision;
+}}
+.plotly-graph-div,
+.main-svg,
+.plotly .cursor-pointer,
+.plotly .nsewdrag {{
+  cursor: default !important;
+}}
+.gtitle {{
+  font-family: {TITLE_FONT_FAMILY} !important;
+  font-weight: 500 !important;
+}}
+.treemaplayer .trace.treemap > .slice:first-child > .surface {{
+  fill: {page_bg} !important;
+  stroke: {page_bg} !important;
+  fill-opacity: 1 !important;
+  stroke-opacity: 1 !important;
+}}
+.treemaplayer .trace.treemap > .slice:first-child > .slicetext {{
+  display: none !important;
+}}
+.treemaplayer .trace.treemap > .slice > .surface {{
+  stroke: {page_bg} !important;
+}}
+</style>""",
+        1,
+    )
     with open(path, "w") as f:
         f.write(html)
 
@@ -101,7 +162,7 @@ def apply_bw_theme(fig):
 
 
 def write_bw_graph(fig, filename):
-    write_graph(apply_bw_theme(fig), os.path.join("BW_graphs", filename))
+    write_graph(apply_bw_theme(fig), os.path.join("BW_graphs", filename), page_bg=BW_BG)
 
 
 os.makedirs("graphs", exist_ok=True)
@@ -142,14 +203,20 @@ fig1 = go.Figure(go.Bar(
 ))
 fig1.update_layout(
     **LAYOUT_BASE,
-    title="Top artists",
+    title=chart_title("Top artists"),
     xaxis=dict(showgrid=True, gridcolor=SURFACE,
                title="Total playlist appearances", color=MUTED,
                range=[0, artist_counts["Total Appearances"].max() * 1.18]),
     yaxis=dict(showgrid=False, color=TEXT, tickfont=dict(size=12),
+               showline=False,
                ticksuffix="  "),
     height=700,
     bargap=0.25,
+)
+fig1.add_shape(
+    type="line", x0=0, x1=0, y0=0, y1=1,
+    xref="x", yref="paper", layer="above",
+    line=dict(color=TEXT, width=2),
 )
 write_graph(fig1, "graphs/01_top_artists.html")
 write_bw_graph(fig1, "01_top_artists.html")
@@ -183,16 +250,22 @@ fig2 = go.Figure(go.Bar(
 ))
 fig2.update_layout(
     **LAYOUT_BASE,
-    title="Top 20 most recurring songs (excluding features)",
+    title=chart_title("Top 20 most recurring songs (excluding features)"),
     xaxis=dict(showgrid=True, gridcolor=SURFACE,
                title="Playlist appearances", color=MUTED,
                range=[0, top_songs["count"].max() * 1.18]),
     yaxis=dict(showgrid=False, color=TEXT, tickfont=dict(size=10),
+               showline=False,
                ticksuffix="  ", automargin=True),
     height=900,
     bargap=0.2,
 )
 fig2.update_layout(margin=dict(l=300, r=40, t=80, b=60))
+fig2.add_shape(
+    type="line", x0=0, x1=0, y0=0, y1=1,
+    xref="x", yref="paper", layer="above",
+    line=dict(color=TEXT, width=2),
+)
 write_graph(fig2, "graphs/02_top_songs.html")
 write_bw_graph(fig2, "02_top_songs.html")
 print("✓ 02_top_songs.html")
@@ -216,19 +289,22 @@ fig4 = go.Figure(go.Treemap(
     labels=top_genres["Genre"],
     parents=[""] * len(top_genres),
     values=top_genres["Count"],
+    root_color=BG,
     marker=dict(
         colors=top_genres["Count"],
-        colorscale=COLORSCALE,
+        colorscale=TREEMAP_COLORSCALE,
         showscale=False,
-        line=dict(width=2, color=BG),
+        line=dict(width=0),
     ),
-    textfont=dict(size=14, color=TEXT),
+    pathbar=dict(visible=False),
+    tiling=dict(pad=4),
+    textfont=dict(size=14, color="#f2f2f2"),
     hovertemplate="<b>%{label}</b><br>Count: %{value}<extra></extra>",
     texttemplate="<b>%{label}</b><br>%{value}",
 ))
 fig4.update_layout(
     **LAYOUT_BASE,
-    title="Top 25 genres",
+    title=chart_title("Top 25 genres"),
     height=600,
 )
 write_graph(fig4, "graphs/03_genre_treemap.html")
@@ -269,7 +345,7 @@ fig5.add_vline(
 
 fig5.update_layout(
     **LAYOUT_BASE,
-    title="Song duration distribution",
+    title=chart_title("Song duration distribution"),
     xaxis=dict(title="Duration", color=MUTED, showgrid=True,
                gridcolor=SURFACE, range=[0, 600],
                tickvals=list(range(0, 601, 60)),
@@ -294,10 +370,10 @@ fig6 = go.Figure(go.Pie(
     labels=labels,
     values=values,
     hole=0.6,
-    marker=dict(colors=[GREEN, PURPLE], line=dict(color=BG, width=3)),
+    marker=dict(colors=["#9a9a9a", "#35c978"], line=dict(color=BG, width=3)),
     textinfo="none",
     texttemplate="%{label}<br>%{percent:.0%}",
-    textfont=dict(size=14, color=TEXT),
+    textfont=dict(size=14, color="#070707"),
     hovertemplate="<b>%{label}</b><br>Songs: %{value}<br>%{percent:.0%}<extra></extra>",
     pull=[0, 0.04],
 ))
@@ -308,7 +384,7 @@ fig6.add_annotation(
 )
 fig6.update_layout(
     **LAYOUT_BASE,
-    title="How explicit is the music?",
+    title=chart_title("How explicit is the music?"),
     height=500,
     legend=dict(font=dict(color=TEXT), bgcolor=CARD_BG),
 )
@@ -331,19 +407,22 @@ fig8 = go.Figure(go.Treemap(
     labels=top_artists_tm["Artist"],
     parents=[""] * len(top_artists_tm),
     values=top_artists_tm["Total"],
+    root_color=BG,
     marker=dict(
         colors=top_artists_tm["Total"],
-        colorscale=COLORSCALE,
+        colorscale=TREEMAP_COLORSCALE,
         showscale=False,
-        line=dict(width=2, color=BG),
+        line=dict(width=0),
     ),
-    textfont=dict(size=13, color=TEXT),
+    pathbar=dict(visible=False),
+    tiling=dict(pad=4),
+    textfont=dict(size=13, color="#f2f2f2"),
     hovertemplate="<b>%{label}</b><br>Total appearances: %{value}<extra></extra>",
     texttemplate="<b>%{label}</b><br>%{value}",
 ))
 fig8.update_layout(
     **LAYOUT_BASE,
-    title="Top 40 artists by playlist presence",
+    title=chart_title("Top 40 artists by playlist presence"),
     height=650,
 )
 write_graph(fig8, "graphs/06_artist_treemap.html")
@@ -379,16 +458,22 @@ fig9 = go.Figure(go.Bar(
 ))
 fig9.update_layout(
     **LAYOUT_BASE,
-    title="Top 20 albums by playlist presence",
+    title=chart_title("Top 20 albums by playlist presence"),
     xaxis=dict(showgrid=True, gridcolor=SURFACE,
                title="Total playlist appearances", color=MUTED,
                range=[0, top_albums["count"].max() * 1.18]),
     yaxis=dict(showgrid=False, color=TEXT, tickfont=dict(size=10),
+               showline=False,
                ticksuffix="  ", automargin=True),
     height=680,
     bargap=0.25,
 )
 fig9.update_layout(margin=dict(l=320, r=40, t=80, b=60))
+fig9.add_shape(
+    type="line", x0=0, x1=0, y0=0, y1=1,
+    xref="x", yref="paper", layer="above",
+    line=dict(color=TEXT, width=2),
+)
 write_graph(fig9, "graphs/07_top_albums.html")
 write_bw_graph(fig9, "07_top_albums.html")
 print("✓ 07_top_albums.html")

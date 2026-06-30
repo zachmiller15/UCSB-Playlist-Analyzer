@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isla Vista wrapped: What Spotify playlists reveal about I.V.'s music culture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Space+Grotesk:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300;1,8..60,400&family=Teko:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080808;
+    --green: #39ff85;
+    --text: #c8c8c8;
+    --text-dim: #4a4a4a;
+    --text-bright: #efefef;
+    --rule: rgba(57, 255, 133, 0.15);
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --display: 'Space Grotesk', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.85;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HERO: centered single column ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: clamp(3rem, 8vw, 6rem) clamp(1.2rem, 6vw, 5rem) clamp(2rem, 5vw, 4rem);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* scrolling bg rows */
+  .scroll-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .scroll-row {
+    display: flex;
+    white-space: nowrap;
+    font-family: var(--display);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green);
+    opacity: 0.07;
+    padding: 3px 0;
+    will-change: transform;
+  }
+  .scroll-row span { padding: 0 1.4rem; flex-shrink: 0; }
+
+  .row-1 { animation: scrollLeft  25s linear infinite; opacity: 0.18; }
+  .row-2 { animation: scrollRight 22s linear infinite; opacity: 0.13; }
+  .row-3 { animation: scrollLeft  25s linear infinite; opacity: 0.16; }
+  .row-4 { animation: scrollRight 25s linear infinite; opacity: 0.12; }
+  .row-5 { animation: scrollLeft  30s linear infinite; opacity: 0.15; }
+
+  @keyframes scrollLeft  { from { transform: translateX(0);    } to { transform: translateX(-50%); } }
+  @keyframes scrollRight { from { transform: translateX(-50%); } to { transform: translateX(0);    } }
+
+  /* edge fades */
+  .scroll-fade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, var(--bg) 0%, transparent 18%, transparent 82%, var(--bg) 100%),
+      linear-gradient(to right,  var(--bg) 0%, transparent 14%, transparent 86%, var(--bg) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* hero content sits above scroll bg */
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 2rem;
+    font-weight: 400;
+    text-shadow: 0 0 20px rgba(57,255,133,0.5);
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 500;
+    color: var(--text-bright);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.8rem;
+    max-width: 820px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--green);
+    text-shadow: 0 0 28px rgba(57,255,133,0.35), 0 0 60px rgba(57,255,133,0.1);
+  }
+
+  /* fade-up reveal */
+  .title-l1 {
+    display: block;
+    color: var(--text-bright);
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.75s 0.15s cubic-bezier(.22,1,.36,1) forwards;
+    margin-bottom: 0.1em;
+  }
+  .title-l2 {
+    display: block;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.75s 0.4s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-byline {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .hero-byline span {
+    color: var(--green);
+    text-shadow: 0 0 14px rgba(57,255,133,0.35);
+  }
+
+  /* ── BODY ── */
+  .body-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: clamp(1rem, 2vw, 2rem) clamp(1.2rem, 5vw, 4rem) clamp(3rem, 6vw, 5rem);
+  }
+
+  .prose p {
+    color: var(--text-bright);
+    margin-bottom: 1.4rem;
+    font-size: 17px;
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  .prose a {
+  color: var(--green);
+  text-decoration: underline;
+  text-decoration-color: rgba(57,255,133,0.3);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--green);
+}
+
+  .chart-caption {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.7;
+  max-width: 700px;
+  margin: -0.5rem auto 2rem;
+  text-align: center;
+}
+
+  .prose p:last-child { margin-bottom: 0; }
+
+  /* ── CHART EMBED ── */
+  .chart-embed {
+    --chart-width: min(calc(100vw - 2.4rem), 1120px);
+    width: var(--chart-width);
+    margin-block: clamp(2.5rem, 6vw, 4rem) 1.4rem;
+    margin-inline: calc((100% - var(--chart-width)) / 2);
+    background: #080808;
+    overflow: visible;
+  }
+
+  .chart-embed iframe {
+    width: 100%;
+    border: none;
+    display: block;
+    background: #080808;
+  }
+
+  .chart-embed.songs iframe  { height: 920px; }
+  .chart-embed.albums iframe { height: 710px; }
+  .chart-embed.std iframe    { height: 680px; }
+  .chart-embed.explicit iframe { height: 500px; }
+
+  .vinyl-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* ── VINYL OUTRO ── */
+  .vinyl-outro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 clamp(1.2rem, 5vw, 4rem) clamp(4rem, 8vw, 7rem);
+  margin-top: -2rem;
+  gap: 2rem;
+}
+
+  .vinyl-caption {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--text);
+    max-width: 520px;
+    text-align: center;
+    line-height: 1.75;
+  }
+
+  .vinyl-caption a {
+    color: var(--green);
+    text-decoration: none;
+    text-shadow: 0 0 12px rgba(57,255,133,0.3);
+    cursor: pointer;
+  }
+
+  .author-bios {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 clamp(1.2rem, 5vw, 4rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .author-bios h2 {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-bright);
+    line-height: 1.2;
+    margin-bottom: 1.2rem;
+  }
+
+  .author-bios p {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.75;
+    margin-bottom: 1.1rem;
+  }
+
+  .author-bios strong {
+    color: var(--text-bright);
+    font-weight: 500;
+   }
+
+  .author-bios p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* record player container — static, holds spinning disc + tonearm */
+  .record-player {
+    position: relative;
+    width: clamp(260px, 72vw, 460px);
+    aspect-ratio: 1;
+    cursor: pointer;
+  }
+
+  /* platter shadow/rim — static */
+  .platter {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #080808;
+    box-shadow:
+      0 8px 40px rgba(0,0,0,0.8),
+      0 2px 8px rgba(0,0,0,0.9),
+      0 0 0 3px #1a1a1a,
+      0 0 0 5px #0d0d0d,
+      0 0 20px rgba(57,255,133,0.14),
+      0 0 40px rgba(57,255,133,0.07);
+    transition: box-shadow 0.4s ease;
+  }
+
+  .record-player:hover .platter {
+    box-shadow:
+      0 8px 40px rgba(0,0,0,0.8),
+      0 2px 8px rgba(0,0,0,0.9),
+      0 0 0 3px #1a1a1a,
+      0 0 0 5px #0d0d0d,
+      0 0 40px rgba(57,255,133,0.22),
+      0 0 80px rgba(57,255,133,0.10);
+  }
+
+  /* the spinning vinyl disc — positioned inside platter */
+  .vinyl-disc {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    animation: spin 9s linear infinite;
+    transform-origin: center;
+    border-radius: 50%;
+  }
+
+  /* label text SVG — spins with disc */
+  #vinyl-label-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    animation: spin 9s linear infinite;
+    transform-origin: center;
+    pointer-events: none;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── SCAN LINES ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .record-player { width: min(88vw, 340px) !important; }
+    .chart-embed {
+      --chart-width: calc(100vw - 1.6rem);
+    }
+    .chart-embed.songs iframe  { height: 920px; }
+    .chart-embed.albums iframe { height: 710px; }
+    .chart-embed.std iframe    { height: 680px; }
+    .chart-embed.explicit iframe { height: 500px; }
+    .hero-title { font-size: clamp(1.6rem, 7vw, 2.4rem); }
+  }
+  @media (min-width: 900px) {
+    .record-player { width: clamp(320px, 36vw, 460px) !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO: centered -->
+<section class="hero">
+
+  <!-- scrolling background -->
+  <div class="scroll-bg">
+    <div class="scroll-row row-1">
+      <span>Pop</span><span>Hip-Hop</span><span>House</span><span>Rock</span><span>Dance</span><span>Electronic</span><span>R&amp;B</span><span>Indie</span><span>Trap</span><span>Alternative</span><span>Soul</span><span>Classic Rock</span>
+      <span>Pop</span><span>Hip-Hop</span><span>House</span><span>Rock</span><span>Dance</span><span>Electronic</span><span>R&amp;B</span><span>Indie</span><span>Trap</span><span>Alternative</span><span>Soul</span><span>Classic Rock</span>
+    </div>
+    <div class="scroll-row row-2">
+      <span>Drake</span><span>FISHER</span><span>Calvin Harris</span><span>Travis Scott</span><span>Dom Dolla</span><span>Rihanna</span><span>Sublime</span><span>Pitbull</span><span>John Summit</span><span>Kanye West</span><span>Disclosure</span><span>Jack Johnson</span><span>Nicki Minaj</span><span>Playboi Carti</span><span>David Guetta</span><span>Fred again..</span>
+      <span>Drake</span><span>FISHER</span><span>Calvin Harris</span><span>Travis Scott</span><span>Dom Dolla</span><span>Rihanna</span><span>Sublime</span><span>Pitbull</span><span>John Summit</span><span>Kanye West</span><span>Disclosure</span><span>Jack Johnson</span><span>Nicki Minaj</span><span>Playboi Carti</span><span>David Guetta</span><span>Fred again..</span>
+    </div>
+    <div class="scroll-row row-3">
+      <span>Indie Rock</span><span>Pop Rap</span><span>Female Vocalists</span><span>90s</span><span>Indie Pop</span><span>Rap</span><span>Alternative Rock</span><span>Pop Rock</span><span>Classic Rock</span><span>Synthpop</span><span>80s</span><span>70s</span>
+      <span>Indie Rock</span><span>Pop Rap</span><span>Female Vocalists</span><span>90s</span><span>Indie Pop</span><span>Rap</span><span>Alternative Rock</span><span>Pop Rock</span><span>Classic Rock</span><span>Synthpop</span><span>80s</span><span>70s</span>
+    </div>
+    <div class="scroll-row row-4">
+      <span>Fleetwood Mac</span><span>Taylor Swift</span><span>Bad Bunny</span><span>Kendrick Lamar</span><span>Flo Rida</span><span>Flume</span><span>Chris Lake</span><span>RÜFÜS DU SOL</span><span>Mac Miller</span><span>Disco Lines</span><span>Mau P</span><span>Kesha</span><span>The Weeknd</span><span>Katy Perry</span><span>Bob Marley & The Wailers</span>
+      <span>Fleetwood Mac</span><span>Taylor Swift</span><span>Bad Bunny</span><span>Kendrick Lamar</span><span>Flo Rida</span><span>Flume</span><span>Chris Lake</span><span>RÜFÜS DU SOL</span><span>Mac Miller</span><span>Disco Lines</span><span>Mau P</span><span>Kesha</span><span>The Weeknd</span><span>Katy Perry</span><span>Bob Marley & The Wailers</span>
+    </div>
+    <div class="scroll-row row-5">
+      <span>Playboi Carti</span><span>In Between Dreams</span><span>Views</span><span>Settle (Deluxe)</span><span>Year of the Caprese</span><span>Oracular Spectacular</span><span>Weezer</span><span>Heads Will Roll</span><span>UTOPIA</span><span>Loud</span><span>Certified Lover Boy</span><span>Teenage Dream</span><span>Hot Fuss</span><span>ASTROWORLD</span><span>Motion</span><span>Sublime</span>
+      <span>Playboi Carti</span><span>In Between Dreams</span><span>Views</span><span>Settle (Deluxe)</span><span>Year of the Caprese</span><span>Oracular Spectacular</span><span>Weezer</span><span>Heads Will Roll</span><span>UTOPIA</span><span>Loud</span><span>Certified Lover Boy</span><span>Teenage Dream</span><span>Hot Fuss</span><span>ASTROWORLD</span><span>Motion</span><span>Sublime</span>
+    </div>
+  </div>
+  <div class="scroll-fade"></div>
+
+  <!-- title content -->
+  <div class="hero-content">
+    <div class="hero-eyebrow">Daily Nexus</div>
+    <h1 class="hero-title" id="hero-title" aria-label="Isla Vista wrapped: What Spotify playlists reveal about I.V.'s music culture"></h1>
+    <div class="hero-byline">
+      By <span>Lance Sanchez, Zachary Miller &amp; Tatrina Arutyunova</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- ARTICLE BODY -->
+<div class="body-wrap">
+
+  <div class="prose">
+    <p class="reveal">In 2024, Spotify Executive Chairman Daniel Ek <a href="https://www.linkedin.com/posts/daniel-ek-1b52093a_if-you-asked-people-what-differentiates-spotify-activity-7214371864054235137-cur4/" target="_blank" rel="noopener">shared on LinkedIn</a> that the streaming platform hosts over 8 billion user-curated playlists. For many listeners, playlists serve as more than a collection of songs — they can also capture emotions, reflect personal identities and build connections. That culture of music-driven connection is visible in Isla Vista, where music is woven into everyday life.</p>
+
+    <p class="reveal">“If you're a musician here, you have such an incredible platform to share your music and to perform in front of people,” Siena Waldman, UC Santa Barbara alum and singer and guitarist of Medea’s Children, said.</p>
+
+    <p class="reveal">An analysis of 193 public Spotify playlists mentioning either “Isla Vista” or “UCSB” in the title found more than 8,700 unique songs spanning over 3,300 artists, 1,693 genres and roughly 530 hours of music. For bands writing in I.V., that range shows how one place can inspire many different moods and sounds, with the ocean often serving as a shared emotional backdrop.</p>
+
+    <p class="reveal">“The ocean definitely ties into a lot of people’s music across different genres,” Waldman said.</p>
+  </div>
+
+<!-- CHART: Top Songs -->
+<div class="chart-embed songs reveal">
+  <iframe src="graphs/02_top_songs.html" title="Top 20 most recurring songs"></iframe>
+</div>
+<p class="chart-caption reveal">“Doses &amp; Mimosas” by Cherub appeared in 21 playlists, making it the most recurring song in the dataset. Other repeat appearances, including “Feel So Close,” “Santeria” and “Heads Will Roll,” suggest a shared soundtrack built around party staples, beach-town familiarity and songs students return to across different memories of I.V. (Lance Sanchez / Daily Nexus)</p>
+
+  <div class="prose">
+    <p class="reveal">For many students, I.V.’s music scene reflects the town itself: beachside, energetic and constantly changing. Local musicians also describe a culture influenced by live performance and student creativity. </p>
+
+    <p class="reveal">Guitarist and fourth-year statistics and data science major Sahand Shafieha, who performs with his band, Dielectric, noted that audiences’ willingness to show up makes room for a wide range of sounds.</p>
+
+    <p class="reveal">“When people go to band shows here, I would say it’s not just about the particular music that they’re interested in,” Shafieha said. “It’s also about just going there to see a band play.”</p>
+
+    <p class="reveal">Waldman echoed this sentiment, mentioning that her band plays music that resonates with them, preferring to appeal to a specific niche where their music will strike a chord.</p>
+
+    <p class="reveal">“We’re writing and playing the kind of music that we want to play, and kind of hoping that there’s an audience out there for it,” Waldman said. “By pushing that sort of music and saying that that’s what we’re about, it attracts the people who are into that and who would want to come see that.”</p>
+  </div>
+
+  <!-- CHART: Genres -->
+   <div class="chart-embed std reveal">
+    <iframe src="graphs/03_genre_treemap.html" title="Top 25 Genres"></iframe>
+  </div>
+  <p class="chart-caption reveal">Pop was the most common genre in the playlist dataset, appearing 855 times, followed by rock, rap, hip-hop and R&amp;B. The range of genres reflects how I.V. playlists move between house parties, beach days, study sessions and personal memory. (Lance Sanchez / Daily Nexus)</p>
+
+  <div class="prose">
+    <p class="reveal">Bands form, graduate and leave, but the culture continues through the students who inherit those sounds, spaces and memories.</p>
+
+    <p class="reveal">“I do like to think that there is enough overlap between one class and the next that aspects of musical identity can be shared and continue,” associate professor of music theory Benjamin Levy said. “That the baton is passed from one group to the next.”</p>
+  </div>
+
+    <!-- CHART: Explicit -->
+    <div class="chart-embed std explicit reveal">
+      <iframe src="graphs/05_explicit_donut.html" title="Explicit vs Clean"></iframe>
+    </div>
+    <p class="chart-caption reveal">Most songs in the dataset were clean, with clean tracks making up 71.5% of the 8,796 songs analyzed. Explicit tracks accounted for 28.5%, suggesting that I.V. playlists lean more toward widely playable, social-setting music than heavily explicit selections. (Lance Sanchez / Daily Nexus)</p>
+
+
+  <div class="prose">
+    <p class="reveal">Each new class makes their own bands, house shows and playlists. In this practice, the class can preserve some of the old while also creating something new.</p>
+
+    <p class="reveal">“There’s a constant flow of new ears and new voices into the community that are always remaking the scene,” associate professor of ethnomusicology David Novak added.</p>
+  </div>
+
+    <!-- CHART: Artists treemap -->
+    <div class="chart-embed std reveal">
+      <iframe src="graphs/06_artist_treemap.html" title="Top 40 artists by playlist presence"></iframe>
+    </div>
+    <p class="chart-caption reveal">Drake was the most recurring artist in the dataset, appearing 209 times across playlists. John Summit, FISHER, Calvin Harris and Rihanna also ranked near the top, showing the overlap between I.V.’s dance-heavy party culture and mainstream pop and hip-hop listening. (Lance Sanchez / Daily Nexus)</p>
+
+
+  <div class="prose">
+    <p class="reveal">Across I.V., students outside formal music programs are building their own stages through bands and performances that spill into the broader Santa Barbara scene. Professor of ethnomusicology Timothy Cooley said he has seen that culture firsthand among his own students.</p>
+
+    <p class="reveal">“A lot of my students are not in the music department, specifically. They have bands, and I see them around Santa Barbara, I see them around in the broader county, I see them at festivals,” Cooley said.</p>
+
+    <p class="reveal">Playlists offer another record of that participation. They show how students shape I.V.’s music culture not only by performing, but by replaying and sharing the songs they attach to the place.</p>
+
+    <p class="reveal">“You are likely to get people contributing to a playlist who might not be the most likely to let their voices be heard in an ethnographic study,” Levy said. “You might get more voices and different ones who are willing to contribute in this way.”</p>
+  </div>
+
+ <!-- CHART: Albums -->
+ <div class="chart-embed albums reveal">
+  <iframe src="graphs/07_top_albums.html" title="Top 20 albums by playlist presence"></iframe>
+</div>
+<p class="chart-caption reveal">Sublime’s self-titled album appeared in 40 playlists, making it the most frequently recurring album in the I.V./UCSB playlist dataset. Albums by Calvin Harris, Black Eyed Peas, Travis Scott and The Killers also ranked highly, pointing to a mix of beach rock, party anthems and campus nostalgia. (Lance Sanchez / Daily Nexus)</p>
+
+
+  <div class="prose">
+    <p class="reveal">While streaming services and playlists have influenced how students discover and connect to music, I.V.’s evolving music culture is predominantly maintained by in-person connection. Playlists may capture what students listen to, but live performances show how songs become part of a shared local identity.</p>
+
+    <p class="reveal">“What people listen to online is not the same as what they listen to live, and a lot of the associations between place and musical identity occur in the space of live performance,” Novak said.</p>
+
+    <p class="reveal">In I.V., music exists beyond headphones and playlists – it lives in crowded living rooms and front-yard concerts, and it becomes part of how students find themselves, find each other and remember the place.</p>
+
+    <p class="reveal">“It’s having this place to develop your identity as you are becoming an adult,” Cooley said.</p>
+  </div>
+
+
+</div><!-- /body-wrap -->
+
+<!-- VINYL OUTRO: click to open playlist -->
+<div class="vinyl-outro reveal">
+
+  <div class="record-player" id="record-player" title="Listen on Spotify">
+
+    <!-- static platter rim -->
+    <div class="platter"></div>
+
+    <!-- spinning groove SVG — this rotates -->
+    <svg id="vinyl-grooves" style="position:absolute;inset:0;width:100%;height:100%;animation:spin 9s linear infinite;transform-origin:center;border-radius:50%;" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="vBase" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#1e1e1e"/>
+          <stop offset="50%"  stop-color="#181818"/>
+          <stop offset="100%" stop-color="#101010"/>
+        </radialGradient>
+        <radialGradient id="vEdge" cx="50%" cy="50%" r="50%">
+          <stop offset="78%"  stop-color="rgba(0,0,0,0)"/>
+          <stop offset="92%"  stop-color="rgba(0,0,0,0.45)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0.7)"/>
+        </radialGradient>
+        <radialGradient id="vLabel" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#163d1e"/>
+          <stop offset="50%"  stop-color="#0d2213"/>
+          <stop offset="100%" stop-color="#060e08"/>
+        </radialGradient>
+        <clipPath id="discClip"><circle cx="200" cy="200" r="199"/></clipPath>
+      </defs>
+      <g clip-path="url(#discClip)">
+        <!-- base -->
+        <circle cx="200" cy="200" r="199" fill="url(#vBase)"/>
+        <!-- groove rings -->
+        <circle cx="200" cy="200" r="192" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="188" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="184" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="180" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="176" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="172" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="168" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="164" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="160" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="156" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="152" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="148" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="144" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="140" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="136" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="132" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="128" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="124" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="120" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="116" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="112" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="108" fill="none" stroke="#111" stroke-width="0.7"/>
+        <circle cx="200" cy="200" r="104" fill="none" stroke="#222" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="100" fill="none" stroke="#111" stroke-width="0.7"/>
+        <!-- edge vignette -->
+        <circle cx="200" cy="200" r="199" fill="url(#vEdge)"/>
+        <!-- dark gap + label -->
+        <circle cx="200" cy="200" r="90"  fill="#090909"/>
+        <circle cx="200" cy="200" r="86"  fill="url(#vLabel)" stroke="rgba(57,255,133,0.16)" stroke-width="0.7"/>
+        <!-- spindle -->
+        <circle cx="200" cy="200" r="4.4" fill="#2a2a2a" stroke="#444" stroke-width="0.6"/>
+        <circle cx="200" cy="200" r="2"   fill="#111"/>
+      </g>
+    </svg>
+
+    <!-- label text SVG overlay — spins with disc -->
+    <svg id="vinyl-label-svg" style="position:absolute;inset:0;width:100%;height:100%;animation:spin 9s linear infinite;transform-origin:center;pointer-events:none;" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <path id="arc-top" d="M 140,200 A 60,60 0 0,1 260,200" fill="none"/>
+      <path id="arc-bot" d="M 140,200 A 60,60 0 0,0 260,200" fill="none"/>
+      <text font-family="'Teko', sans-serif" font-size="15" fill="#39ff85" fill-opacity="0.7" letter-spacing="2" font-weight="600">
+        <textPath href="#arc-top" startOffset="50%" text-anchor="middle">ISLA VISTA</textPath>
+      </text>
+      <text font-family="'Teko', sans-serif" font-size="15" fill="#39ff85" fill-opacity="0.7" letter-spacing="3" font-weight="600">
+        <textPath href="#arc-bot" startOffset="50%" text-anchor="middle">UCSB</textPath>
+      </text>
+    </svg>
+
+  </div>
+
+  <p class="vinyl-caption">
+    <em>Click above to listen to a playlist curated by Waldman that gathers songs made by I.V. residents for the community that shaped them.</em>
+  </p>
+
+</div>
+
+<section class="author-bios reveal" aria-labelledby="author-bios-heading">
+  <h2 id="author-bios-heading">About the Authors</h2>
+  <p><strong>Lance Sanchez</strong> has been a member of the Daily Nexus since 2023, serving as Assistant Data Editor in 2024 before becoming Data Editor in 2025. Under his and the other editors' leadership, the Data Section has earned multiple awards from the California College Media Association and the Associated Collegiate Press (ACP) National College Media Convention. In addition to his editorial work, Lance is an active contributor to the Nexus Photo Team, capturing major campus and community events such as The Warmup, headlined by Big Sean, and the Santa Barbara International Film Festival.</p>
+  <p><strong>Tatrina Arutyunova</strong> has been a member of the Daily Nexus since 2025, serving as a Data Reporter in the Data Section. Her reporting combines programming and investigative journalism to analyze public records, APIs and datasets covering issues relevant to the UCSB and Santa Barbara communities. She aims to help readers better understand trends and public policy with the goal of keeping people informed on news around the local community through powerful data-driven storytelling. Outside of journalism, she is the lead singer of a hard rock band, performing at venues like the Santa Barbara International Film Festival, and serves as President and Founder of the Data Intelligence Club at UCSB.</p>
+</section>
+
+<script>
+// ── Title fade up ──────────────────────────────────────────────────────
+const titleEl = document.getElementById('hero-title');
+titleEl.innerHTML =
+  '<span class="title-l1">Isla Vista wrapped:</span>' +
+  '<em class="title-l2">What Spotify playlists reveal about I.V.\u2019s music culture</em>';
+
+// ── Scroll reveal ──────────────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── Vinyl: click opens Spotify ─────────────────────────────────────────
+const spotifyUrl = 'https://open.spotify.com/embed/playlist/1pUV9bBoMeHXcC9Ke96tVP?utm_source=generator';
+document.getElementById('record-player').addEventListener('click', () => {
+  window.open(spotifyUrl, '_blank');
+});
+</script>
+</body>
+</html>
