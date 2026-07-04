@@ -68,6 +68,12 @@
     }
     .card.full-width { grid-column: 1 / -1; }
     iframe { width: 100%; border: none; display: block; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    @media (max-width: 600px) {
+      html, body { overflow-x: hidden; width: 100%; }
+      .chart-scroll iframe { min-width: 720px; }
+      .chart-scroll.explicit-chart iframe { min-width: 420px; }
+    }
     footer {
       text-align: center;
       padding: 40px;
@@ -116,22 +122,22 @@
   </div>
 
   <div class="grid">
-    <div class="card full-width">
+    <div class="card full-width chart-scroll">
       <iframe src="02_top_songs.html" height="920"></iframe>
     </div>
-    <div class="card full-width">
+    <div class="card full-width chart-scroll">
       <iframe src="06_artist_treemap.html" height="680"></iframe>
     </div>
-    <div class="card">
+    <div class="card chart-scroll">
       <iframe src="03_genre_treemap.html" height="630"></iframe>
     </div>
-    <div class="card">
+    <div class="card chart-scroll">
       <iframe src="04_duration_distribution.html" height="530"></iframe>
     </div>
-    <div class="card">
+    <div class="card chart-scroll explicit-chart">
       <iframe src="05_explicit_donut.html" height="530"></iframe>
     </div>
-    <div class="card full-width">
+    <div class="card full-width chart-scroll">
       <iframe src="07_top_albums.html" height="710"></iframe>
     </div>
   </div>

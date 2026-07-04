@@ -62,7 +62,7 @@ def format_duration(seconds):
     return f"{minutes}:{secs:02d}"
 
 
-def write_graph(fig, path, page_bg=BG):
+def write_graph(fig, path, page_bg=BG, mobile_min_width=720):
     html = fig.to_html(
         full_html=True,
         include_plotlyjs=True,
@@ -104,6 +104,14 @@ html, body {{
 }}
 .treemaplayer .trace.treemap > .slice > .surface {{
   stroke: {page_bg} !important;
+}}
+@media (max-width: 600px) {{
+  html, body {{
+    overflow-x: auto;
+  }}
+  .plotly-graph-div {{
+    min-width: {mobile_min_width}px;
+  }}
 }}
 </style>""",
         1,
@@ -161,8 +169,13 @@ def apply_bw_theme(fig):
     return bw_fig
 
 
-def write_bw_graph(fig, filename):
-    write_graph(apply_bw_theme(fig), os.path.join("BW_graphs", filename), page_bg=BW_BG)
+def write_bw_graph(fig, filename, mobile_min_width=720):
+    write_graph(
+        apply_bw_theme(fig),
+        os.path.join("BW_graphs", filename),
+        page_bg=BW_BG,
+        mobile_min_width=mobile_min_width,
+    )
 
 
 os.makedirs("graphs", exist_ok=True)
@@ -260,14 +273,14 @@ fig2.update_layout(
     height=900,
     bargap=0.2,
 )
-fig2.update_layout(margin=dict(l=300, r=40, t=80, b=60))
+fig2.update_layout(margin=dict(l=360, r=40, t=80, b=60))
 fig2.add_shape(
     type="line", x0=0, x1=0, y0=0, y1=1,
     xref="x", yref="paper", layer="above",
     line=dict(color=TEXT, width=2),
 )
-write_graph(fig2, "graphs/02_top_songs.html")
-write_bw_graph(fig2, "02_top_songs.html")
+write_graph(fig2, "graphs/02_top_songs.html", mobile_min_width=780)
+write_bw_graph(fig2, "02_top_songs.html", mobile_min_width=780)
 print("✓ 02_top_songs.html")
 
 
@@ -371,9 +384,11 @@ fig6 = go.Figure(go.Pie(
     values=values,
     hole=0.6,
     marker=dict(colors=["#9a9a9a", "#35c978"], line=dict(color=BG, width=3)),
-    textinfo="none",
+    textinfo="label+percent",
     texttemplate="%{label}<br>%{percent:.0%}",
     textfont=dict(size=14, color="#070707"),
+    textposition="inside",
+    insidetextorientation="horizontal",
     hovertemplate="<b>%{label}</b><br>Songs: %{value}<br>%{percent:.0%}<extra></extra>",
     pull=[0, 0.04],
 ))
@@ -388,8 +403,8 @@ fig6.update_layout(
     height=500,
     legend=dict(font=dict(color=TEXT), bgcolor=CARD_BG),
 )
-write_graph(fig6, "graphs/05_explicit_donut.html")
-write_bw_graph(fig6, "05_explicit_donut.html")
+write_graph(fig6, "graphs/05_explicit_donut.html", mobile_min_width=420)
+write_bw_graph(fig6, "05_explicit_donut.html", mobile_min_width=420)
 print("✓ 05_explicit_donut.html")
 
 
@@ -553,6 +568,12 @@ dashboard_html = f"""<!DOCTYPE html>
     }}
     .card.full-width {{ grid-column: 1 / -1; }}
     iframe {{ width: 100%; border: none; display: block; }}
+    .chart-scroll {{ overflow-x: auto; -webkit-overflow-scrolling: touch; }}
+    @media (max-width: 600px) {{
+      html, body {{ overflow-x: hidden; width: 100%; }}
+      .chart-scroll iframe {{ min-width: 720px; }}
+      .chart-scroll.explicit-chart iframe {{ min-width: 420px; }}
+    }}
     footer {{
       text-align: center;
       padding: 40px;
@@ -601,22 +622,22 @@ dashboard_html = f"""<!DOCTYPE html>
   </div>
 
   <div class="grid">
-    <div class="card full-width">
+    <div class="card full-width chart-scroll">
       <iframe src="02_top_songs.html" height="920"></iframe>
     </div>
-    <div class="card full-width">
+    <div class="card full-width chart-scroll">
       <iframe src="06_artist_treemap.html" height="680"></iframe>
     </div>
-    <div class="card">
+    <div class="card chart-scroll">
       <iframe src="03_genre_treemap.html" height="630"></iframe>
     </div>
-    <div class="card">
+    <div class="card chart-scroll">
       <iframe src="04_duration_distribution.html" height="530"></iframe>
     </div>
-    <div class="card">
+    <div class="card chart-scroll explicit-chart">
       <iframe src="05_explicit_donut.html" height="530"></iframe>
     </div>
-    <div class="card full-width">
+    <div class="card full-width chart-scroll">
       <iframe src="07_top_albums.html" height="710"></iframe>
     </div>
   </div>
