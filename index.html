@@ -393,6 +393,15 @@
   @media (min-width: 900px) {
     .record-player { width: clamp(320px, 36vw, 460px) !important; }
   }
+
+  @media (max-width: 600px) {
+    .scroll-bg, .scroll-fade { display: none; }
+    body::after { display: none; }
+    .hero { overflow: visible; }
+    .title-l1, .title-l2 { animation: none; opacity: 1; transform: none; }
+    .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    #vinyl-grooves, #vinyl-label-svg { animation: none; }
+  }
 </style>
 </head>
 <body>
